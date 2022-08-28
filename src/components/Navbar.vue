@@ -122,7 +122,7 @@
                     <router-link to="/">Push Check Out</router-link>
                   </div>
                   <div>
-                    <router-link to="/">Monitoring Unit</router-link>
+                    <router-link :to="{name : 'monitoringunit'}">Monitoring Unit</router-link>
                     <router-link to="/">Refuel Revision</router-link>
                     <router-link to="/">Fuel Rate</router-link>
                     <router-link to="/">Grease, Oil & Coolant</router-link>
@@ -303,8 +303,9 @@ export default {
 }
 nav{
     width: 100%;
-    top: 0;
+    top: -30px;
     padding: 0;
+    position: sticky;
 }
 button{
   padding: 0.5rem 0.75rem;
@@ -314,10 +315,10 @@ button{
   cursor: pointer;
 }
 .nav{
+  background: white;
+  z-index: 20;
   user-select: none;
   display: flex;
-  position: sticky;
-  top: 0;
   padding: 12px 32px;
   justify-content: space-between;
   align-items: center;
@@ -359,7 +360,7 @@ button{
   transition: all 0.3s;
 }
 .listnav>div>h4:hover {
-  color: var(--hitam1);
+  color: var(--biru1);
 }
 .containerA{
   padding: 12px 0;
@@ -371,7 +372,7 @@ button{
   transform: translate(-20px, 0)
 } 
 .containerA:hover >h4{
-  color: var(--black1);
+  color: var(--biru1);
 }
 .navbox{
   position: absolute;
@@ -380,7 +381,7 @@ button{
   text-align: left;
   padding: 0px 24px;
   margin-top: 12px;
-  box-shadow: 0 0 50px 0 #ddd;
+  box-shadow: 0 0 50px 0 rgb(231, 231, 231);
   transition: transform 0.5s, opacity 0.5s;
   transform: translate(-20px, -10px);
   max-height: 0;
@@ -455,5 +456,20 @@ button{
   opacity: 1;
   transform: translate(-60px, 0);
   max-height: 100px;
+}
+
+@media screen and (max-width: 800px){
+  .listnav{
+    padding-left: 0;
+  }
+  .nav{
+    padding: 12px 0;
+  }
+  .cirbox, .logo{
+    display: none;
+  }
+  .navinfo>p:first-child{
+    display: none;
+  }
 }
 </style>
