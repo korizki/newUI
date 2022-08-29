@@ -35,6 +35,9 @@ h1{ font-size: 2.4rem };
     margin-block-end: 0;
     box-sizing: border-box;
 }
+body{
+  scroll-behavior: smooth;
+}
 button{
   line-height: 1rem;
 }

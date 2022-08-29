@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue';
 import MonitoringUnit from '../views/AllUnit.vue';
+import Weather from '../views/Weather.vue';
 
 const routes = [
   {
@@ -26,6 +27,14 @@ const routes = [
     component: MonitoringUnit,
     meta: {
       title: 'Operation - Monitoring Unit | SS6 Development'
+    }
+  },
+  {
+    path: '/weather',
+    name: 'weather',
+    component: Weather,
+    meta: {
+      title: 'Weather | SS6 Development'
     }
   },
 ]

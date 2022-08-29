@@ -238,6 +238,7 @@
                   <div>
                     <router-link to="/">Productivity by Model</router-link>
                     <router-link to="/">OB Gain & Loss</router-link>
+                    <router-link :to="{name: 'weather'}">Weather Data</router-link>
                   </div>
                 </div>
               </div>
@@ -361,6 +362,7 @@ button{
 }
 .listnav>div>h4:hover {
   color: var(--biru1);
+  cursor: pointer;
 }
 .containerA{
   padding: 12px 0;

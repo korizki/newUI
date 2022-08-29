@@ -144,8 +144,8 @@
     }
     @keyframes updown{
         0% {margin-top: 16px}
-        10% {margin-top: -45px}
-        50% {margin-top: -45px}
+        10% {margin-top: -40px}
+        50% {margin-top: -40px}
         60% {margin-top: 16px}
         100% {margin-top: 16px}
     }

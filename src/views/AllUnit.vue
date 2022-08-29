@@ -294,16 +294,19 @@
         display: flex;
         align-items: flex-end;
         border-radius: 0.25rem;
-        padding: 16px 24px;
         margin: 8px 0;
         gap: 16px;
-        max-height: 0;
+        max-height: 0px;
         opacity: 0;
         overflow: hidden;
         outline: 1px solid var(--abu2);
         background: var(--abu3);
         text-align: left;
-        transition: all 0.3s ease;
+        transition: max-height 0.5s;
+    }
+    .filterbox>div{
+        padding: 16px 24px;
+        padding-right: 0px;
     }
     .filterbox>div>div{
         display: flex;
@@ -337,7 +340,7 @@
         opacity: 1;
     }
     .search{
-        padding: 0.6rem 0.75rem;
+        padding: 0.75rem;
         color: var(--abu1);
         padding-left: 40px;
         border: 1px solid #ddd;
