@@ -26,26 +26,6 @@
                     </div>
                 </form>
             </div>
-
-            <div class="cont">
-                <h3>Weather History by Date Range</h3>
-                <p class="successinfo" v-if="searchresult">Success get weather history, total <strong>{{searchresult.length}}</strong> data.</p>
-                <p class="successinfo failed" v-else>Sorry, there is no weather data to displayed.</p>
-                <div class="weatherlist" v-if="searchresult">
-                    <div v-for="item in searchresult" class="weatheritem" >
-                        <figure>
-                            <img :src="`./weathericon/${item.icon}.svg`" alt="icon" width="80">
-                        </figure>
-                        <h4>{{item.conditions}}</h4>
-                        <div>
-                            <p><i class="fi fi-rr-calendar-lines"></i> {{item.datetime}}</p>
-                            <p><i class="fi fi-rr-temperature-high"></i> {{item.temp}}&deg; Celcius</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <hr class="divider">
             <div class="cont">
                 <h3>Weather - Today</h3>
                 <p class="successinfo">Last updated at {{lastUpdated ? lastUpdated : 'Getting data ...'}} | {{timezone}} Time.</p>
@@ -74,14 +54,14 @@
                         <figure>
                             <img :src="`./weathericon/${day.weathercode}.svg`" alt="icon" width="80">
                         </figure>
-                        <h4>{{weathercode[day.weathercode]}}</h4>
-                        <div classs="weatherdetail" :class="{'exinfo' : isExInfo}" >
+                        <h4>{{weathercode[day.weathercode].substring(0,20)}}</h4>
+                        <div class="weatherdetail" :class=" isExInfosrc ? 'exinfo' : '' ">
                             <p title="Weather Date"><i class="fi fi-rr-calendar-lines"></i> {{day.date}}</p>
-                            <p title="Weather Temperature"><i class="fi fi-rr-temperature-high"></i> {{day.temperature}}&deg; Celcius</p>
-                            <p title="Rain Sum"><i class="fi fi-rr-cloud-showers"></i> {{day.precipitation_sum}} mm</p>
+                            <p title="Weather Temperature"><i class="fi fi-rr-temperature-high"></i> {{day.temperature}}&deg; Celcius <strong>(max)</strong></p>
+                            <p title="Rain Sum"><i class="fi fi-rr-cloud-showers"></i> {{day.precipitation_sum}} mm <span class="rainhours" title="Rain Duration"><i class="fi fi-rr-alarm-clock"></i> {{day.precipitation_hours}} hour's</span></p>
                             <p title="Wind Speed"><i class="fi fi-rr-wind"></i> {{day.windspeed}} Km/h</p>
                         </div>
-                        <button class="checkweather" @click="isExInfo = !isExInfo">Detail</button>
+                        <button class="checkweather" @click="isExInfosrc = !isExInfosrc">Detail</button>
                     </div>
                     <div v-else class="center">
                         <h3>Sorry, there is no data weather to display.</h3>
@@ -89,8 +69,41 @@
                 </div>
             </div>
             <div class="navcontrol">
-                <button @click="horizontalScroll('minus')">&lt;</button>
-                <button @click="horizontalScroll('plus')">&gt;</button>
+                <button @click="horizontalScroll('weatherlist','minus')">&lt;</button>
+                <button @click="horizontalScroll('weatherlist','plus')">&gt;</button>
+            </div>
+            <hr class="divider">
+            <div class="cont">
+                <h3>Weather History by Date Range</h3>
+                <div>
+                    <div  class="weathersummary" v-if="searchresult">
+                        <p class="successinfo" >Success get weather history, total <strong>{{searchresult.length}}</strong> data.</p>
+                        <div>
+                            <p class="successinfo blue"><i class="fi fi-rr-cloud-rain"></i> Total Precipitation Sum <strong>{{Math.round(totalrain)}} mm</strong></p>
+                            <p class="successinfo blue"><i class="fi fi-rr-clock-three"></i> Total Rain Hours <strong>{{totalrainhour}} hours</strong></p>
+                        </div>
+                    </div>
+                    <p class="successinfo failed" v-else>Sorry, there is no weather data to displayed.</p>
+                </div>
+                <div class="weatherresult" >
+                    <div  v-for="day in searchresult" class="weatheritem">
+                        <figure>
+                            <img :src="`./weathericon/${day.weathercode}.svg`" alt="icon" width="80">
+                        </figure>
+                        <h4>{{weathercode[day.weathercode].substring(0,19)}}</h4>
+                        <div class="weatherdetail" :class=" isExInfo ? 'exinfo' : '' ">
+                            <p title="Weather Date"><i class="fi fi-rr-calendar-lines"></i> {{day.date}}</p>
+                            <p title="Weather Temperature"><i class="fi fi-rr-temperature-high"></i> {{day.temperature}}&deg; Celcius <strong>(max)</strong></p>
+                            <p title="Rain Sum"><i class="fi fi-rr-cloud-showers"></i> {{day.precipitation_sum}} mm <span class="rainhours" title="Rain Duration"><i class="fi fi-rr-alarm-clock"></i> {{day.precipitation_hours}} hour's</span></p>
+                            <p title="Wind Speed"><i class="fi fi-rr-wind"></i> {{day.windspeed}} Km/h</p>
+                        </div>
+                        <button class="checkweather" @click="isExInfo = !isExInfo">Detail</button>
+                    </div>
+                </div>
+                <div class="navcontrol">
+                    <button v-if="searchresult" @click="horizontalScroll('weatherresult','minus')">&lt;</button>
+                    <button v-if="searchresult" @click="horizontalScroll('weatherresult','plus')">&gt;</button>
+                </div>
             </div>
         </div>
     </div>
@@ -117,7 +130,10 @@ export default {
             startdate: '',
             enddate: '',
             isExInfo: false,
+            isExInfosrc: false,
             searchresult: '',
+            totalrain: '',
+            totalrainhour: '',
             isFilter: true,
             weathercode : 
                 { 
@@ -130,8 +146,8 @@ export default {
                     51: 'Drizzle Slight',
                     53: 'Drizzle Moderate',
                     55: 'Drizzle Dense',
-                    56 : 'Freezing Drizzle Slight',
-                    57 : 'Freezing Drizzle Dense',
+                    56 : 'Freeze Drizzle Slight',
+                    57 : 'Freeze Drizzle Dense',
                     61: 'Rain Slight',
                     63: 'Rain Moderate',
                     65: 'Rain Heavy',
@@ -161,14 +177,13 @@ export default {
             this.timezone = data.timezone;
             this.windspeed = data.current_weather.windspeed
         },
-        horizontalScroll(param){
-            param == 'plus' ? document.querySelector('.weatherlist').scrollLeft += 360 : document.querySelector('.weatherlist').scrollLeft -= 360 
+        horizontalScroll(list, param){
+            param == 'plus' ? document.querySelector(`.${list}`).scrollLeft += 360 : document.querySelector(`.${list}`).scrollLeft -= 360 
         },
         loadSearchResult(data){
             this.searchresult = data.days;
-            console.log(this.searchresult)
         },
-        loadForecast(data){
+        convertData(data){
             const totaldata = data.daily.time.length;
             let newArray = [];
             for(let i = 0; i < totaldata; i++){
@@ -178,15 +193,26 @@ export default {
                     precipitation_sum : data.daily.precipitation_sum[i],
                     temperature: data.daily.temperature_2m_max[i],
                     weathercode: data.daily.weathercode[i],
-                    windspeed: data.daily.windspeed_10m_max[i]
+                    windspeed: data.daily.windspeed_10m_max[i],
+                    precipitation_hours: data.daily.precipitation_hours[i]
                 }
                 newArray.push(convertedObj)
             }
-            this.forecast = newArray;
+            return newArray;
+        },
+        loadForecast(data){
+            this.forecast = this.convertData(data);
         },
         searchWeatherData(){
-            axios.get(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/loa%20kulu/${this.startdate}/${this.enddate}?unitGroup=metric&key=KEQ6Z8A6KMJHGR63K9YME3VHB&contentType=json`)
-                .then(res => this.loadSearchResult(res.data))
+            axios.get(`https://api.open-meteo.com/v1/forecast?latitude=-0.64&longitude=116.79&daily=weathercode,temperature_2m_max,precipitation_sum,precipitation_hours,windspeed_10m_max&timezone=Asia%2FSingapore&start_date=${this.startdate}&end_date=${this.enddate}`)
+                .then(res => {
+                    this.searchresult = this.convertData(res.data)
+                    this.totalrain = res.data.daily.precipitation_sum.reduce((a,b) => a+b, 0)
+                    this.totalrainhour = res.data.daily.precipitation_hours.reduce((a,b) => a+b, 0)
+                    // auto scroll to bottom
+                    this.searchresult ? window.scrollTo({top: document.querySelector('.mainc').scrollHeight, behavior: 'smooth'}) : ''
+                })
+            // automate scroll
         }
     },
     mounted(){
@@ -194,13 +220,31 @@ export default {
         axios.get('https://api.open-meteo.com/v1/forecast?latitude=-0.64&longitude=116.79&current_weather=true&timezone=auto')
             .then(res => this.loadData(res.data))
         // forecast 1 week
-        axios.get('https://api.open-meteo.com/v1/forecast?latitude=-0.64&longitude=116.79&timezone=auto&daily=weathercode,temperature_2m_max,precipitation_sum,windspeed_10m_max')
+        axios.get('https://api.open-meteo.com/v1/forecast?latitude=-0.64&longitude=116.79&timezone=auto&daily=weathercode,temperature_2m_max,precipitation_sum,windspeed_10m_max,precipitation_hours')
             .then(res => this.loadForecast(res.data))
     }
 }
 </script>
 
 <style>
+    .weathersummary{
+        display: flex;
+        justify-content: space-between;
+    }
+    .weathersummary>div{
+        margin-top: 8px;
+    }
+    .weathersummary>div>p{
+        margin: 0 4px;
+    }
+    .rainhours{
+        margin-left: 8px;
+        font-size: 0.64rem;
+        background: var(--biru2);
+        color: var(--biru1);
+        border-radius: 0.25rem;
+        padding: 4px 8px;
+    }
     .checkweather{
         padding: 0.5rem 0.75rem;
         border-radius: 0.25rem;
@@ -241,10 +285,10 @@ export default {
     .navcontrol>button:nth-child(2){
         transform: translate(20px, -200px);
     }
-    .weatherlist::-webkit-scrollbar {
+    .weatherlist::-webkit-scrollbar, .weatherresult::-webkit-scrollbar {
         width: 5px;
       }
-    .weatherlist{
+    .weatherlist, .weatherresult{
         display: flex;
         margin: 16px 0;
         border-radius: 0.25rem;
@@ -265,6 +309,11 @@ export default {
         text-align: center;
         transition: transform 0.3s ease;
     }
+    .weatheritem>figure{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
     .center{
         display: flex;
         justify-content: center;
@@ -278,8 +327,9 @@ export default {
         box-shadow: 0 0 25px 0 rgba(221, 221, 221, 0.7);
         outline: 2px solid var(--biru1);
     }
-    .weatheritem>h4, .weatheritem>div{
+    .weatheritem>h4{
         text-align: left;
+        width: 180px;
     }
     .weatheritem>figure{
         width: 100%;
@@ -288,9 +338,9 @@ export default {
     .weatheritem>figure>img{
         margin-bottom: 16px;
     }
-    .weatheritem>div{
+    .weatherdetail{
+        text-align: left !important;
         margin-top: 8px;
-        width: 180px;
         color: var(--hitam2);
         font-size: 0.9rem;
         overflow: hidden;
@@ -299,7 +349,7 @@ export default {
         position: relative;
     }
     .exinfo{
-        max-height: 150px !important;
+        max-height: 150px;
     }
     .weatheritem>div>p>i{
         display: inline-block;
@@ -362,10 +412,13 @@ export default {
     .botdesc>h4{
         line-height: 1.5rem;
     }
-    .botdesc>h4>i, .fi-rr-marker, .fi-rr-wind, .fi-rr-cloud-showers{
+    .botdesc>h4>i, .fi-rr-marker, .fi-rr-wind, .fi-rr-cloud-showers, .fi-rr-alarm-clock, .fi-rr-cloud-rain, .fi-rr-clock-three{
         display: inline-block;
         margin-right: 4px;
-        transform: translateY(1px);
+        transform: translateY(1.5px);
+    }
+    .fi-rr-clock-three, .fi-rr-cloud-rain{
+        transform: translateY(1.5px);
     }
     .divider{
         border: none;
