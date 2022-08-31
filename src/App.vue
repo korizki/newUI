@@ -26,7 +26,7 @@
   --biru1: #2391D9;
   --biru2: #d9edfc;
   --kuning1: #f1b203;
-  --kuning2: #ffde80; 
+  --kuning2: #ffeab1; 
 }
 h1{ font-size: 2.4rem };
 *{

@@ -3,21 +3,37 @@
         <Navbar />
         <div class="mainc">
             <div class="headss">
-                <h1 class="header">Weather Information</h1>
+                <h1 class="header">Weather Page</h1>
                 <div class="breadcrumb">
                     <p><router-link to="/">Home</router-link> / Weekly / <strong>Weather Data</strong></p>
                 </div>
             </div>
-            <div class="cont" style="margin-top: 0px">
+            <div class="filterboxx">
+                <h3 @click="isFilter = !isFilter">Filter Menu <i class="fi fi-rr-caret-right"></i></h3>
+                <form @submit.prevent="searchWeatherData">
+                    <div class="filterbox" :class="{'expand' : isFilter}" >
+                        <div>
+                            <label for="page">Start Date</label>
+                            <input type="date" v-model="startdate" required>
+                        </div>
+                        <div>
+                            <label for="count">End Date</label>
+                            <input type="date" v-model="enddate" required>
+                        </div>
+                        <div>
+                            <button class="filterbtn" @click="handleFilter"><i class="fi fi-rr-filter"></i> Show Data</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="cont">
                 <h3>Weather - Today</h3>
                 <p class="successinfo">Last updated at {{lastUpdated ? lastUpdated : 'Getting data ...'}} | {{timezone}} Time.</p>
                 <div class="weatherbox" v-if="currentWeather">
-                    <img :src="icon" alt="icon" width="135">
+                    <img :src="`./weathericon/${currentWeather}.svg`" alt="icon" width="100">
                     <div class="weatherdesc" >
-                        <h3>{{currentWeather }}</h3>
-                        <!-- <p><i class="fi fi-rr-wind"></i> Wind Speed {{windspeed}} Km/h</p> -->
-                        <p v-if="!hasprecipitation">No Precipitation</p>
-                        <p v-else class="haspre">Has Precipitation</p>
+                        <h3>{{weathercode[currentWeather] }}</h3>
+                        <p><i class="fi fi-rr-wind"></i> Wind Speed {{windspeed}} Km/h</p>
                         <div class="botdesc">
                             <h4><i class="fi fi-rr-temperature-high"></i> {{temperature}}&deg; Celcius</h4>
                             <h4><i class="fi fi-rr-marker"></i> {{location}}</h4>
@@ -28,39 +44,14 @@
                     <h3>Please wait, we are getting Weather Data soon ...</h3>
                 </div>
             </div>
+
             <hr class="divider">
             <div class="cont">
-                <h3>Weather Forecast (next 5 days)</h3>
+                <h3>Weather Forecast (next 7 days)</h3>
                 <p class="successinfo blue"><i class="fi fi-rr-marker"></i> {{location ? location : 'Getting your location ...'}}</p>
                 <div class="weatherlist">
-                    <div  v-for="day in forecast" class="weatheritem " v-if="forecast">
-                        <div class="forecast">
-                            <div>
-                                <p class="remark"><span>Day</span></p>
-                                <figure>
-                                    <img :src="day.Day.Icon > 9 ? `https://developer.accuweather.com/sites/default/files/${day.Day.Icon}-s.png` : `https://developer.accuweather.com/sites/default/files/0${day.Day.Icon}-s.png`" alt="icon" width="100">
-                                </figure>
-                                <h4>{{day.Day.IconPhrase}}</h4>
-                                <div class="weatherdetail">
-                                    <p >{{day.Day.PrecipitationType}}</p>
-                                    <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,9)}}</h4>
-                                    <h4><i class="fi fi-rr-temperature-high"></i> {{day.Temperature.Maximum.Value}}&deg;C (max) - {{day.Temperature.Minimum.Value}}&deg;C (min)</h4>
-                                </div>
-                            </div>
-                            <div style="border-top: 1px solid var(--abu2); padding-top: 24px;">
-                                <p class="remark night"><span>Night</span></p>
-                                <figure>
-                                    <img :src="day.Day.Icon > 9 ? `https://developer.accuweather.com/sites/default/files/${day.Day.Icon}-s.png` : `https://developer.accuweather.com/sites/default/files/0${day.Day.Icon}-s.png`" alt="icon" width="100">
-                                </figure>
-                                <h4>{{day.Day.IconPhrase}}</h4>
-                                <div class="weatherdetail">
-                                    <p >{{day.Day.PrecipitationType}}</p>
-                                    <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,9)}}</h4>
-                                    <h4><i class="fi fi-rr-temperature-high"></i> {{day.Temperature.Maximum.Value}}&deg;C (max) | {{day.Temperature.Minimum.Value}}&deg;C (min)</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- <figure>
+                    <div  v-for="day in forecast" class="weatheritem" v-if="forecast">
+                        <figure>
                             <img :src="`./weathericon/${day.weathercode}.svg`" alt="icon" width="80">
                         </figure>
                         <h4>{{weathercode[day.weathercode].substring(0,20)}}</h4>
@@ -70,7 +61,7 @@
                             <p title="Rain Sum"><i class="fi fi-rr-cloud-showers"></i> {{day.precipitation_sum}} mm <span class="rainhours" title="Rain Duration"><i class="fi fi-rr-alarm-clock"></i> {{day.precipitation_hours}} hour's</span></p>
                             <p title="Wind Speed"><i class="fi fi-rr-wind"></i> {{day.windspeed}} Km/h</p>
                         </div>
-                        <button class="checkweather" @click="isExInfosrc = !isExInfosrc">Detail</button> -->
+                        <button class="checkweather" @click="isExInfosrc = !isExInfosrc">Detail</button>
                     </div>
                     <div v-else class="center">
                         <h3>Sorry, there is no data weather to display.</h3>
@@ -83,30 +74,30 @@
             </div>
             <hr class="divider">
             <div class="cont">
-                <h3>Weather History (last 24 hours)</h3>
+                <h3>Weather History by Date Range</h3>
                 <div>
                     <div  class="weathersummary" v-if="searchresult">
                         <p class="successinfo" >Success get weather history, total <strong>{{searchresult.length}}</strong> data.</p>
-                        <!-- <div>
+                        <div>
                             <p class="successinfo blue"><i class="fi fi-rr-cloud-rain"></i> Total Precipitation Sum <strong>{{Math.round(totalrain)}} mm</strong></p>
                             <p class="successinfo blue"><i class="fi fi-rr-clock-three"></i> Total Rain Hours <strong>{{totalrainhour}} hours</strong></p>
-                        </div> -->
+                        </div>
                     </div>
                     <p class="successinfo failed" v-else>Sorry, there is no weather data to displayed.</p>
                 </div>
                 <div class="weatherresult" >
                     <div  v-for="day in searchresult" class="weatheritem">
                         <figure>
-                            <img :src="day.WeatherIcon > 9 ? `https://developer.accuweather.com/sites/default/files/${day.WeatherIcon}-s.png` : `https://developer.accuweather.com/sites/default/files/0${day.WeatherIcon}-s.png`" alt="icon" width="135">
+                            <img :src="`./weathericon/${day.weathercode}.svg`" alt="icon" width="80">
                         </figure>
-                        <h4>{{day.WeatherText}}</h4>
-                        <div class="weatherdetail">
-                            <p v-if="!day.HasPrecipitation">No Precipitation</p>
-                            <p v-else class="haspre">Has Precipitation</p>
-                            <h4><i class="fi fi-rr-alarm-clock"></i> {{day.LocalObservationDateTime.substring(11,19)}}</h4>
-                            <h4><i class="fi fi-rr-temperature-high"></i> {{day.Temperature.Metric.Value}}&deg; Celcius</h4>
+                        <h4>{{weathercode[day.weathercode].substring(0,19)}}</h4>
+                        <div class="weatherdetail" :class=" isExInfo ? 'exinfo' : '' ">
+                            <p title="Weather Date"><i class="fi fi-rr-calendar-lines"></i> {{day.date}}</p>
+                            <p title="Weather Temperature"><i class="fi fi-rr-temperature-high"></i> {{day.temperature}}&deg; Celcius <strong>(max)</strong></p>
+                            <p title="Rain Sum"><i class="fi fi-rr-cloud-showers"></i> {{day.precipitation_sum}} mm <span class="rainhours" title="Rain Duration"><i class="fi fi-rr-alarm-clock"></i> {{day.precipitation_hours}} hour's</span></p>
+                            <p title="Wind Speed"><i class="fi fi-rr-wind"></i> {{day.windspeed}} Km/h</p>
                         </div>
-                        <a :href="day.Link" target="_blank" class="checkweather" >Detail</a>
+                        <button class="checkweather" @click="isExInfo = !isExInfo">Detail</button>
                     </div>
                 </div>
                 <div class="navcontrol">
@@ -130,10 +121,10 @@ export default {
             enddate: '',
             location: '',
             lastUpdated: '',
-            hasprecipitation: '',
             icon: '',
             temperature: '',
             timezone: '',
+            windspeed: '',
             currentWeather: '',
             forecast: '',
             startdate: '',
@@ -144,27 +135,73 @@ export default {
             totalrain: '',
             totalrainhour: '',
             isFilter: true,
+            weathercode : 
+                { 
+                    0 : 'Clear Sky',
+                    1 : 'Mainly Clear',
+                    2 : 'Partly Cloudly',
+                    3 : 'Overcast',
+                    45 : 'Fog',
+                    48: 'Depositing Rime Fog',
+                    51: 'Drizzle Slight',
+                    53: 'Drizzle Moderate',
+                    55: 'Drizzle Dense',
+                    56 : 'Freeze Drizzle Slight',
+                    57 : 'Freeze Drizzle Dense',
+                    61: 'Rain Slight',
+                    63: 'Rain Moderate',
+                    65: 'Rain Heavy',
+                    66: 'Freezing Rain Light',
+                    67: 'Freezing Rain Heavy',
+                    71: 'Snow Fall Slight',
+                    73: 'Snow Fall Moderate',
+                    75: 'Snow Fall Heavy',
+                    77: 'Snow Grains',
+                    80: 'Rain Showers Slight',
+                    81: 'Rain Showers Moderate',
+                    82: 'Rain Showers Violent',
+                    85: 'Snow Showers Slight',
+                    86: 'Snow Showers Heavy',
+                    95: 'Thunderstrom Slight',
+                    96: 'Thunderstrom Moderate',
+                    99: 'Thunderstrom Heavy',
+                }
         }
     },
     methods: {
         loadData(data){
-            this.location = 'Tenggarong, East Kalimantan, Indonesia';
-            this.currentWeather = data[0].WeatherText;
-            this.hasprecipitation = data[0].HasPrecipitation;
-            this.temperature = data[0].Temperature.Metric.Value;
-            this.lastUpdated = data[0].LocalObservationDateTime;
-            this.timezone = 'GMT+8';
-            this.icon = data[0].WeatherIcon > 9 ? `https://developer.accuweather.com/sites/default/files/${data[0].WeatherIcon}-s.png` : `https://developer.accuweather.com/sites/default/files/0${data[0].WeatherIcon}-s.png`
+            this.location = 'Loa Kulu - Kutai Kartanegara, Indonesia';
+            this.currentWeather = parseInt(data.current_weather.weathercode);
+            this.temperature = data.current_weather.temperature;
+            this.lastUpdated = data.current_weather.time;
+            this.timezone = data.timezone;
+            this.windspeed = data.current_weather.windspeed
         },
         horizontalScroll(list, param){
             param == 'plus' ? document.querySelector(`.${list}`).scrollLeft += 360 : document.querySelector(`.${list}`).scrollLeft -= 360 
         },
         loadSearchResult(data){
-            this.searchresult = data;
+            this.searchresult = data.days;
+        },
+        convertData(data){
+            const totaldata = data.daily.time.length;
+            let newArray = [];
+            for(let i = 0; i < totaldata; i++){
+                // console.log(data.daily.time[i])
+                let convertedObj = {
+                    date: data.daily.time[i],
+                    precipitation_sum : data.daily.precipitation_sum[i],
+                    temperature: data.daily.temperature_2m_max[i],
+                    weathercode: data.daily.weathercode[i],
+                    windspeed: data.daily.windspeed_10m_max[i],
+                    precipitation_hours: data.daily.precipitation_hours[i]
+                }
+                newArray.push(convertedObj)
+            }
+            return newArray;
         },
         loadForecast(data){
-            this.forecast = data.DailyForecasts;
-            console.log(this.forecast)
+            this.forecast = this.convertData(data);
         },
         searchWeatherData(){
             axios.get(`https://api.open-meteo.com/v1/forecast?latitude=-0.64&longitude=116.79&daily=weathercode,temperature_2m_max,precipitation_sum,precipitation_hours,windspeed_10m_max&timezone=Asia%2FSingapore&start_date=${this.startdate}&end_date=${this.enddate}`)
@@ -180,78 +217,16 @@ export default {
     },
     mounted(){
         // current weather
-        axios.get('http://dataservice.accuweather.com/currentconditions/v1/203761?apikey=y9FGaAGrwwXm6bIkWKhrSAfPwBHisVIM')
+        axios.get('https://api.open-meteo.com/v1/forecast?latitude=-0.64&longitude=116.79&current_weather=true&timezone=auto')
             .then(res => this.loadData(res.data))
-        // historycal last 24 hours
-        axios.get('http://dataservice.accuweather.com/currentconditions/v1/203761/historical/24?apikey=y9FGaAGrwwXm6bIkWKhrSAfPwBHisVIM')
-            .then(res => this.loadSearchResult(res.data))
-        // forecast 5 days
-        axios.get('http://dataservice.accuweather.com/forecasts/v1/daily/5day/203761?apikey=y9FGaAGrwwXm6bIkWKhrSAfPwBHisVIM')
+        // forecast 1 week
+        axios.get('https://api.open-meteo.com/v1/forecast?latitude=-0.64&longitude=116.79&timezone=auto&daily=weathercode,temperature_2m_max,precipitation_sum,windspeed_10m_max,precipitation_hours')
             .then(res => this.loadForecast(res.data))
     }
 }
 </script>
 
-<style scoped>
-    .remark{
-        position: relative;
-        text-align:left;
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 700;
-    }
-    .remark>span{
-        background: var(--kuning2);
-        color: var(--kuning1);    
-        border-radius: 0.25rem;
-        padding: 4px 8px;
-    }
-    .night>span{
-        background: var(--abu2);
-        color: var(--hitam1);
-    }
-    .forecast{
-        display: flex;
-        gap: 24px 0px;
-        flex-wrap: wrap;
-    }
-    .forecast>div{
-        overflow: hidden;
-        flex-basis: 200px;
-        max-width: 200px;
-    }
-    .forecast>div>h4{
-        width: 200px;
-        text-align: left;
-        margin-top: 16px;
-    }
-    .weatherdesc>h3{
-        margin-bottom: 8px;
-    }
-    .weatherdesc>p, .weatherdetail>p{
-        color: var(--biru1) !important;
-        display: inline;
-        background: var(--biru2);
-        font-size: 0.8rem;
-        border-radius: 0.25rem;
-        padding: 4px 8px;
-    }
-    .weatherdetail>h4:nth-child(2){
-        margin-top: 12px;
-    }
-    .weatherdetail>h4{
-        font-weight: 400;
-    }
-    .haspre{
-        color: var(--merah1) !important;
-        background: var(--merah2) !important;
-    }
-    .botdesc{
-        margin-top: 16px;
-    }
-    .botdesc>h4{
-        font-weight: 400;
-    }
+<style>
     .weathersummary{
         display: flex;
         justify-content: space-between;
@@ -271,12 +246,12 @@ export default {
         padding: 4px 8px;
     }
     .checkweather{
-        display: block;
         padding: 0.5rem 0.75rem;
         border-radius: 0.25rem;
         color: dodgerblue;
         background: white;
         border: 1px solid dodgerblue;
+        width: 100%;
         font-size: 0.875rem;
         margin-top: 16px;
         transition: all 0.2s;
@@ -354,7 +329,7 @@ export default {
     }
     .weatheritem>h4{
         text-align: left;
-        width: 170px;
+        width: 180px;
     }
     .weatheritem>figure{
         width: 100%;
@@ -369,6 +344,7 @@ export default {
         color: var(--hitam2);
         font-size: 0.9rem;
         overflow: hidden;
+        max-height: 45px;
         transition: max-height 0.3s ease;
         position: relative;
     }
@@ -436,7 +412,7 @@ export default {
     .botdesc>h4{
         line-height: 1.5rem;
     }
-    .botdesc>h4>i, .fi-rr-marker, .fi-rr-wind, .fi-rr-cloud-showers, .fi-rr-alarm-clock, .fi-rr-cloud-rain, .fi-rr-clock-three, .fi-rr-temperature-high{
+    .botdesc>h4>i, .fi-rr-marker, .fi-rr-wind, .fi-rr-cloud-showers, .fi-rr-alarm-clock, .fi-rr-cloud-rain, .fi-rr-clock-three{
         display: inline-block;
         margin-right: 4px;
         transform: translateY(1.5px);
