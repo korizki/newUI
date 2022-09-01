@@ -43,8 +43,8 @@
                                 <h4>{{day.Day.IconPhrase}}</h4>
                                 <div class="weatherdetail">
                                     <p >{{day.Day.PrecipitationType}}</p>
-                                    <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,9)}}</h4>
-                                    <h4><i class="fi fi-rr-temperature-high"></i> {{day.Temperature.Maximum.Value}}&deg;C (max) - {{day.Temperature.Minimum.Value}}&deg;C (min)</h4>
+                                    <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,10)}}</h4>
+                                    <h4><i class="fi fi-rr-temperature-high"></i> {{Math.round((day.Temperature.Maximum.Value -32 ) * 5/9) }}&deg;C (max) - {{ Math.round((day.Temperature.Minimum.Value - 32) * 5/9 ) }}&deg;C (min)</h4>
                                 </div>
                             </div>
                             <div style="border-top: 1px solid var(--abu2); padding-top: 24px;">
@@ -55,8 +55,8 @@
                                 <h4>{{day.Day.IconPhrase}}</h4>
                                 <div class="weatherdetail">
                                     <p >{{day.Day.PrecipitationType}}</p>
-                                    <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,9)}}</h4>
-                                    <h4><i class="fi fi-rr-temperature-high"></i> {{day.Temperature.Maximum.Value}}&deg;C (max) | {{day.Temperature.Minimum.Value}}&deg;C (min)</h4>
+                                    <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,10)}}</h4>
+                                    <h4><i class="fi fi-rr-temperature-high"></i> {{Math.round((day.Temperature.Maximum.Value - 32) * 5/9)}}&deg;C (max) | {{Math.round((day.Temperature.Minimum.Value -32) * 5/9)}}&deg;C (min)</h4>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </div>
-            <div class="navcontrol">
+            <div class="navcontrol topnav">
                 <button @click="horizontalScroll('weatherlist','minus')">&lt;</button>
                 <button @click="horizontalScroll('weatherlist','plus')">&gt;</button>
             </div>
@@ -309,6 +309,12 @@ export default {
     }
     .navcontrol>button:nth-child(2){
         transform: translate(20px, -200px);
+    }
+    .topnav>button:nth-child(1){
+        transform: translate(-20px, -300px);
+    }
+    .topnav>button:nth-child(2){
+        transform: translate(20px, -300px);
     }
     .weatherlist::-webkit-scrollbar, .weatherresult::-webkit-scrollbar {
         width: 5px;
