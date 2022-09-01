@@ -44,7 +44,7 @@
                                 <div class="weatherdetail">
                                     <p >{{day.Day.PrecipitationType}}</p>
                                     <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,10)}}</h4>
-                                    <h4><i class="fi fi-rr-temperature-high"></i> {{Math.round((day.Temperature.Maximum.Value -32 ) * 5/9) }}&deg;C (max) - {{ Math.round((day.Temperature.Minimum.Value - 32) * 5/9 ) }}&deg;C (min)</h4>
+                                    <h4><i class="fi fi-rr-temperature-high"></i> {{Math.round((day.Temperature.Maximum.Value -32 ) * 5/9) }}&deg;C <strong>(max)</strong> - {{ Math.round((day.Temperature.Minimum.Value - 32) * 5/9 ) }}&deg;C <strong>(min)</strong></h4>
                                 </div>
                             </div>
                             <div style="border-top: 1px solid var(--abu2); padding-top: 24px;">
@@ -56,7 +56,7 @@
                                 <div class="weatherdetail">
                                     <p >{{day.Day.PrecipitationType}}</p>
                                     <h4><i class="fi fi-rr-alarm-clock"></i> {{day.Date.substring(0,10)}}</h4>
-                                    <h4><i class="fi fi-rr-temperature-high"></i> {{Math.round((day.Temperature.Maximum.Value - 32) * 5/9)}}&deg;C (max) | {{Math.round((day.Temperature.Minimum.Value -32) * 5/9)}}&deg;C (min)</h4>
+                                    <h4><i class="fi fi-rr-temperature-high"></i> {{Math.round((day.Temperature.Maximum.Value - 32) * 5/9)}}&deg;C <strong>(max)</strong> | {{Math.round((day.Temperature.Minimum.Value -32) * 5/9)}}&deg;C <strong>(min)</strong></h4>
                                 </div>
                             </div>
                         </div>
@@ -335,7 +335,7 @@ export default {
         border: 1px solid var(--abu2);
         background: white;
         border-radius: 0.5rem;
-        width: max-content;
+        max-width: 190px;
         padding: 24px;
         text-align: center;
         transition: transform 0.3s ease;
@@ -360,7 +360,7 @@ export default {
     }
     .weatheritem>h4{
         text-align: left;
-        width: 170px;
+        max-width: 170px;
     }
     .weatheritem>figure{
         width: 100%;
