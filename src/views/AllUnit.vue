@@ -78,7 +78,7 @@
                     <label for="">Auto Scroll</label> -->
                     <div style="display: flex; align-items: center; gap: 16px" v-if="listEq.length">
                         <label class="switch" title="Switch to Auto Generate Data" >
-                            <input type="checkbox" @click="handleUpdate">
+                            <input type="checkbox" @click="handleUpdate" v-model="isAutoUpdate">
                             <span class="slider round"></span>
                         </label>
                         <label for="">Auto Update</label>
@@ -145,16 +145,17 @@
                 this.totalData = data
             },
             loadInfinite(){
+                this.isAutoUpdate = true;
                 this.activepage = 1;
                 const totalpages = Math.ceil(parseInt(this.totalData) / parseInt(this.filtercount))
                 this.totalpage = totalpages;
                 for(let i = 1; i <= totalpages+1; i++ ){
                     // load data secara terus menerus setiap 10 detik 
                     setTimeout(() => {
+                        if(i === totalpages){
+                            this.loadInfinite()
+                        }
                         if(this.isAutoUpdate == true){
-                            if(i > totalpages){
-                                this.loadInfinite()
-                            }
                             this.activepage = i
                             axios.get(`http://ss6api.ppa-mhu.net/ppa-employee-api/api/cico/listUnit?units[]=${this.hdChecked ? 'HD' : ''}&units[]=${this.exChecked ? 'EX' : ''}&units[]=${this.dtChecked ? 'DT' : ''}&page=${i}&count=${this.filtercount}`)
                             .then(res => this.loadData(res.data.data))
